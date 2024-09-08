@@ -23,16 +23,6 @@ jobs:
         with:
           submodules: recursive  # Asegura que se clone el submódulo _base
 
-      - name: Move _base contents to root
-        run: |
-          mv _base/* .
-          mv _base/.* . 2>/dev/null || true
-          rm -rf _base
-
-      - name: Copy images to assets directory
-        run: |
-          mv images assets
-
       - name: Setup Ruby
         uses: ruby/setup-ruby@8575951200e472d5f2d95c625da0c7bec8217c42 # v1.161.0
         with:
