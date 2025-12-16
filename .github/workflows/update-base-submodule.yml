@@ -1,0 +1,34 @@
+name: Update website-base submodule
+
+on:
+  repository_dispatch:
+    types: [update-base]
+
+jobs:
+  update-submodule:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.SUBMODULE_PUSH_TOKEN }}
+
+      - name: Update website-base submodule
+        run: |
+          git submodule update --remote _base
+
+      - name: Commit submodule update
+        run: |
+          if git diff --quiet; then
+            echo "No changes in submodule"
+            exit 0
+          fi
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add _base
+          git commit -m "chore: update website-base submodule to latest"
+          git push
