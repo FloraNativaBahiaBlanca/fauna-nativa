@@ -3,6 +3,7 @@ name: Update website-base submodule
 on:
   repository_dispatch:
     types: [update-base]
+  workflow_dispatch:
 
 jobs:
   update-submodule:
