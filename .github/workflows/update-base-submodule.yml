@@ -1,24 +1,27 @@
 name: Update website-base submodule
-
 on:
   repository_dispatch:
     types: [update-base]
   workflow_dispatch:
-
+permissions:
+  contents: write
 jobs:
   update-submodule:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo with submodules
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: false
           token: ${{ secrets.SUBMODULE_PUSH_TOKEN }}
 
-      - name: Update website-base submodule
+      - name: Configure Git auth (for private repos & submodules)
         run: |
-          git submodule update --remote _base
+          git config --global url."https://${{ secrets.SUBMODULE_PUSH_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
+      - name: Initialize and update submodule
+        run: |
+          git submodule update --init --remote _base
 
       - name: Commit submodule update
         run: |
@@ -26,10 +29,8 @@ jobs:
             echo "No changes in submodule"
             exit 0
           fi
-
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-
           git add _base
           git commit -m "chore: update website-base submodule to latest"
           git push
